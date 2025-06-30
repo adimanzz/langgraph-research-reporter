@@ -1,29 +1,24 @@
-from langgraph.graph import StateGraph
-from nodes.search_node import search_node
-from nodes.summarize_node import summarize_node
-from typing import TypedDict
+from graph_setup import build_graph
+import streamlit as st
 
-class GraphState(TypedDict):
-    query: str
-    search_results: str
-    report: str
+st.set_page_config(page_title="Report Generator")
+st.title("Research Report Generator")
 
+st.markdown("Enter a research query (eg: coordinates or topic) to generate a report.")
 
-# Define nodes
-graph = StateGraph(GraphState)
+query = st.text_input("Enter your query")
 
-graph.add_node("search", search_node)
-graph.add_node("summarize", summarize_node)
-
-# Define flow
-graph.set_entry_point("search")
-graph.add_edge("search", "summarize")
-graph.set_finish_point("summarize")
-
-
-compiled = graph.compile()
-query = input("Enter your research topic: ")
-results = compiled.invoke({"query": query})
-print("\n ====== Final Report ====== \n")
-print(results['report'])
+if st.button("Generate Report"):
+    if query.strip():
+        with st.spinner("Agents collaborating... please hold on."):
+            try:
+                graph = build_graph()
+                result = graph.invoke({"query": query})
+                st.success("Report is ready!")
+                st. markdown("### Summary Report")
+                st.write(result["report"])
+            except Exception as ex:
+                st.error(f"Error: {ex}")
+    else:
+        st.warning("please enter a valid query.")
 
