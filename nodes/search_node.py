@@ -10,5 +10,5 @@ def search_node(state):
     query = state["query"]
     print(f"Searching the web for topic: {query}")
     results = search_client.search(query, search_depth='advanced', include_answer=True)
-    state["search_results"] = results["answer"]
+    state["web_results"] = results["answer"]
     return state
